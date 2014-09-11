@@ -1,4 +1,4 @@
-FROM google/golang
+FROM google/golang:latest
 
 RUN go get github.com/Gurpartap/guestbook-example && \
     cp /gopath/src/github.com/Gurpartap/guestbook-example/minimal-image/Dockerfile /gopath
