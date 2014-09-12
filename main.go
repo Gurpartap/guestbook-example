@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"net/http"
 	"os"
+	"strings"
 
 	"github.com/codegangsta/negroni"
 	"github.com/gorilla/mux"
@@ -18,7 +19,7 @@ func ListRangeHandler(rw http.ResponseWriter, req *http.Request) {
 		panic(err)
 	}
 
-	membersJSON, err := json.Marshal(members)
+	membersJSON, err := json.MarshalIndent(members, "", "  ")
 	if err != nil {
 		panic(err)
 	}
@@ -40,7 +41,7 @@ func ListPushHandler(rw http.ResponseWriter, req *http.Request) {
 		panic(err)
 	}
 
-	membersJSON, err := json.Marshal(members)
+	membersJSON, err := json.MarshalIndent(members, "", "  ")
 	if err != nil {
 		panic(err)
 	}
@@ -62,6 +63,31 @@ func InfoHandler(rw http.ResponseWriter, req *http.Request) {
 	rw.Write([]byte(infoString))
 }
 
+func EnvHandler(rw http.ResponseWriter, req *http.Request) {
+	getenvironment := func(data []string, getkeyval func(item string) (key, val string)) map[string]string {
+		items := make(map[string]string)
+		for _, item := range data {
+			key, val := getkeyval(item)
+			items[key] = val
+		}
+		return items
+	}
+	environment := getenvironment(os.Environ(), func(item string) (key, val string) {
+		splits := strings.Split(item, "=")
+		key = splits[0]
+		val = strings.Join(splits[1:], "=")
+		return
+	})
+
+	envJSON, err := json.MarshalIndent(environment, "", "  ")
+	if err != nil {
+		panic(err)
+	}
+
+	rw.WriteHeader(200)
+	rw.Write([]byte(envJSON))
+}
+
 func main() {
 	pool = simpleredis.NewConnectionPoolHost(
 		os.Getenv("SERVICE_HOST") + ":" + os.Getenv("REDIS_MASTER_SERVICE_PORT"))
@@ -71,6 +97,7 @@ func main() {
 	r.Path("/lrange/{key}").Methods("GET").HandlerFunc(ListRangeHandler)
 	r.Path("/rpush/{key}/{value}").Methods("GET").HandlerFunc(ListPushHandler)
 	r.Path("/info").Methods("GET").HandlerFunc(InfoHandler)
+	r.Path("/env").Methods("GET").HandlerFunc(EnvHandler)
 
 	n := negroni.Classic()
 	n.UseHandler(r)
