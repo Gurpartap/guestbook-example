@@ -89,7 +89,7 @@ func EnvHandler(rw http.ResponseWriter, req *http.Request) {
 }
 
 func main() {
-	pool = simpleredis.NewConnectionPoolHost(os.Getenv("SERVICE_HOST") + ":" + os.Getenv("REDIS_MASTER_SERVICE_SERVICE_PORT"))
+	pool = simpleredis.NewConnectionPoolHost(os.Getenv("SERVICE_HOST") + ":" + os.Getenv("REDIS_MASTER_SERVICE_PORT"))
 	defer pool.Close()
 
 	r := mux.NewRouter()
