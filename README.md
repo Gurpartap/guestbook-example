@@ -1,3 +1,5 @@
+Note: This project has been merged into Kubernetes and is being maintained at [https://github.com/GoogleCloudPlatform/kubernetes/tree/master/examples/guestbook-go](https://github.com/GoogleCloudPlatform/kubernetes/tree/master/examples/guestbook-go).
+
 ## Guestbook example for [Kubernetes](https://github.com/GoogleCloudPlatform/kubernetes)
 
 Written in Go
